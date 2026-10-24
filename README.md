@@ -55,6 +55,24 @@ Hacker News ───────┘     -> dedupe against already-reported item
    - `telegram.receive_updates`: see below
 3. `docker compose up -d --build`.
 
+### Portainer
+
+Use a "Repository" stack pointing at this repo; it deploys
+`docker-compose.yml`, which only pulls the image. Portainer resolves relative
+paths against its own clone of the repo, so keep your files in a host
+directory and point the stack at it:
+
+1. On the host: `mkdir -p /opt/daily-digest` and put your `config.json` in
+   it. `data/` and `claude-home/` are created on first start.
+2. In the stack's **Environment variables**, set `APP_DIR=/opt/daily-digest`,
+   `TELEGRAM_BOT_TOKEN` and `CLAUDE_CODE_OAUTH_TOKEN`, plus `GITHUB_TOKEN` if
+   you have one.
+
+If `config.json` is missing, the stack fails with `bind source path does not
+exist` instead of starting with a broken config.
+
+### Notes
+
 `docker-compose.yml` pulls the CI-built image from GHCR. The auto-loaded
 `docker-compose.override.yml` adds `build: .` for local builds. The entrypoint
 fixes ownership of `./data`, `./claude-home` and `config.json`, then drops to

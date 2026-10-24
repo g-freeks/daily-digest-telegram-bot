@@ -144,7 +144,16 @@ claude -p "$PROMPT" --output-format json \
 | `./config.json` | `/app/config/config.json` | real config, gitignored |
 | `./data` | `/data` | `state.json`, `reported.json`, `reports/`, `cost_log.jsonl`, `work/` |
 | `./claude-home` | `/home/node` (whole $HOME) | `~/.claude/` and `~/.claude.json`, writable under `read_only: true` |
-| `.env` | env vars | `TELEGRAM_BOT_TOKEN`, `CLAUDE_CODE_OAUTH_TOKEN`, optional `GITHUB_TOKEN` |
+| `.env` / stack variables | env vars | `TELEGRAM_BOT_TOKEN`, `CLAUDE_CODE_OAUTH_TOKEN`, optional `GITHUB_TOKEN`, `APP_DIR` |
+
+All host paths sit under `${APP_DIR:-.}`. Portainer "Repository" stacks
+resolve relative paths against Portainer's own clone of the repo inside its
+data volume, so there `APP_DIR` must be an absolute host path. `config.json`
+is mounted with `create_host_path: false`, so a missing file fails the start;
+short syntax would silently create a directory named `config.json`. Tokens
+come in via `environment:` interpolation (local `.env` or Portainer stack
+variables), not `env_file`: Portainer reads `env_file` inside its own
+container, where a host file isn't visible.
 
 `docker-entrypoint.sh` starts as root, chowns `/data`, `/home/node` and the
 config file to `node`, then drops to `node` via `gosu`. Side effect: those

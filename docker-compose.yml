@@ -22,17 +22,33 @@ services:
       - /tmp
     mem_limit: 512m
     cpus: "1.0"
-    env_file:
-      - .env
+    # Tokens come from the environment: locally from ./.env (which compose
+    # reads for ${...} interpolation), in Portainer from the stack's
+    # "Environment variables". Not env_file: Portainer would look for that
+    # file inside its own container, where a host file isn't visible.
+    environment:
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:?set TELEGRAM_BOT_TOKEN}
+      CLAUDE_CODE_OAUTH_TOKEN: ${CLAUDE_CODE_OAUTH_TOKEN:?set CLAUDE_CODE_OAUTH_TOKEN}
+      GITHUB_TOKEN: ${GITHUB_TOKEN:-}
+    # APP_DIR is the host directory holding config.json, data/ and
+    # claude-home/. It defaults to the checkout for local use. Portainer
+    # resolves relative paths against its own clone of this repo (inside its
+    # data volume), so set APP_DIR to an absolute host path there.
     volumes:
       # Your real config, gitignored — see config/config.json for the
-      # anonymized example this repo ships and tracks instead.
-      - ./config.json:/app/config/config.json
-      - ./data:/data
+      # anonymized example this repo ships and tracks instead. Long syntax
+      # with create_host_path: false, so a missing file fails the start with
+      # a clear error instead of Docker silently creating a directory there.
+      - type: bind
+        source: ${APP_DIR:-.}/config.json
+        target: /app/config/config.json
+        bind:
+          create_host_path: false
+      - ${APP_DIR:-.}/data:/data
       # Mounts the whole $HOME, not just .claude/: Claude Code also writes
       # top-level state (~/.claude.json) outside that subdirectory, and under
       # read_only:true that needs to land somewhere writable. Ownership is
       # fixed automatically at container start by docker-entrypoint.sh, so
       # these host directories can belong to whatever uid created them.
-      - ./claude-home:/home/node
+      - ${APP_DIR:-.}/claude-home:/home/node
     restart: unless-stopped
