@@ -1,0 +1,9 @@
+.env
+/config.json
+data/*
+!data/.gitkeep
+claude-home/*
+!claude-home/.gitkeep
+__pycache__/
+*.pyc
+.venv/

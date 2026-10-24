@@ -1,0 +1,25 @@
+{
+  "allowed_chat_ids": [123456789],
+  "telegram": { "receive_updates": true },
+  "schedule": { "time": "07:30", "timezone": "Europe/Stockholm" },
+  "topic": {
+    "name": "Node.js / npm security",
+    "prompt": "You write a daily security brief for a Node.js developer who maintains production services built on Express, Next.js and common npm packages. Report only newly disclosed vulnerabilities, exploits and malicious packages that a typical Node.js developer actually needs to act on: issues in Node.js itself, in widely used npm packages, or anything exploited in the wild. Skip theoretical issues in obscure packages, duplicates and vendor marketing. For each item give: the package (or Node.js release line), affected versions, fixed version, severity, whether it is known to be exploited in the wild, the concrete fix (e.g. `npm i pkg@x.y.z` or the Node.js version to upgrade to) and the link. Keep it short and factual; one compact block per item, most urgent first.",
+    "empty_message": "Nothing to report Sir",
+    "sources": [
+      { "type": "github_advisories", "ecosystem": "npm" },
+      { "type": "rss", "url": "https://nodejs.org/en/feed/vulnerability.xml" },
+      { "type": "hn_algolia", "queries": ["npm vulnerability", "node.js CVE", "malicious npm package", "npm supply chain"], "min_points": 10 }
+    ],
+    "filters": {
+      "min_severity": "high",
+      "always_include": ["known_exploited", "malicious_package"],
+      "packages": { "watchlist": ["express", "next", "axios"], "min_weekly_downloads": 1000000 }
+    }
+  },
+  "weather": {
+    "location": { "name": "Malmö, Sweden", "lat": 55.605, "lon": 13.004 },
+    "prompt": "Write a short English weekend weather report for the location below, for someone deciding what to do today. Cover today's temperature range (°C), whether and when it will rain, and the wind (mention gusts if they are strong). End with a one-line outlook for tomorrow. At most 6 short lines, plain text, no headings, one fitting emoji at the start is fine."
+  },
+  "runtime": { "timeout_seconds": 600, "max_turns": 30, "weather_max_turns": 3 }
+}

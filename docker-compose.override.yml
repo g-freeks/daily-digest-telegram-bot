@@ -1,0 +1,8 @@
+services:
+  bot:
+    # Auto-loaded by `docker compose` alongside docker-compose.yml for local
+    # development: adds the ability to build from source (`docker compose
+    # build` / `up --build`) instead of only pulling the CI-published image.
+    # Deployment tools that ingest just docker-compose.yml (e.g. Portainer's
+    # "Repository" stack type) never see this file, so they stay pull-only.
+    build: .

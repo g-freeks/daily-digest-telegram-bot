@@ -1,0 +1,7 @@
+.git
+.env
+config.json
+data
+claude-home
+__pycache__
+*.pyc

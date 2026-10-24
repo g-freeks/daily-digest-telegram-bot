@@ -1,0 +1,2 @@
+python-telegram-bot[job-queue]==22.8
+defusedxml==0.7.1
