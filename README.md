@@ -62,14 +62,18 @@ Use a "Repository" stack pointing at this repo; it deploys
 paths against its own clone of the repo, so keep your files in a host
 directory and point the stack at it:
 
-1. On the host: `mkdir -p /opt/daily-digest` and put your `config.json` in
-   it. `data/` and `claude-home/` are created on first start.
-2. In the stack's **Environment variables**, set `APP_DIR=/opt/daily-digest`,
+1. On the host, create a writable directory, e.g.
+   `/mnt/<pool>/apps/daily-digest` on TrueNAS (where `/opt` is read-only),
+   and put your `config.json` in it. `data/` and `claude-home/` are created
+   on first start.
+2. In the stack's **Environment variables**, set `APP_DIR` to that directory,
    `TELEGRAM_BOT_TOKEN` and `CLAUDE_CODE_OAUTH_TOKEN`, plus `GITHUB_TOKEN` if
    you have one.
 
 If `config.json` is missing, the stack fails with `bind source path does not
-exist` instead of starting with a broken config.
+exist` instead of starting with a broken config. On first start the
+entrypoint makes these files owned by uid 1000 (the container's user), so
+editing `config.json` on the host may then need `sudo`.
 
 ### Notes
 
